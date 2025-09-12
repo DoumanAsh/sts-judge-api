@@ -1,6 +1,6 @@
 from internal import core
 from api import serializers
-from rest_framework import status, fields
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
@@ -20,8 +20,9 @@ except Exception as error:
 def convert_similarity_array(
     similarity: list[list[float]], is_bulk: bool = False
 ) -> Response:
-    print("similarity=", len(similarity))
-    data = [{"score": similarity[0]} for similarity in similarity]
+    # This is really bad logic, need to re-think it actually
+    # It would be the best to have list of phrases in API rather than pairs in first place
+    data = [{"score": similarity[idx]} for (idx, similarity) in enumerate(similarity)]
     response = (
         serializers.JudgeResultSerializer(data, many=True)
         if is_bulk
